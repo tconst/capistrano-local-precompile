@@ -6,7 +6,7 @@ module Capistrano
     def self.load_into(configuration)
       configuration.load do
 
-        set(:precompile_cmd)   { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:precompile --trace" }
+        set(:precompile_cmd)   { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:precompile" }
         set(:cleanexpired_cmd) { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:clean_expired" }
         set(:assets_dir)       { "public/assets" }
 
