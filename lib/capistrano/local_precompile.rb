@@ -7,7 +7,7 @@ module Capistrano
       configuration.load do
 
         set(:precompile_cmd)   { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:precompile --trace" }
-        set(:cleanexpired_cmd) { "RAILS_ENV=production #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:clean_expired" }
+        set(:cleanexpired_cmd) { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:clean_expired" }
         set(:assets_dir)       { "public/assets" }
 
         set(:turbosprockets_enabled)    { false }
