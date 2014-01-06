@@ -6,8 +6,8 @@ module Capistrano
     def self.load_into(configuration)
       configuration.load do
 
-        set(:precompile_cmd)   { "#{fetch(:bundle_cmd, "bundle")} exec rake assets:precompile" }
-        set(:cleanexpired_cmd) { "#{fetch(:bundle_cmd, "bundle")} exec rake assets:clean_expired" }
+        set(:precompile_cmd)   { "RAILS_ENV=#{rails_env} #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:precompile --trace" }
+        set(:cleanexpired_cmd) { "RAILS_ENV=production #{asset_env} #{fetch(:bundle_cmd, "bundle")} exec rake assets:clean_expired" }
         set(:assets_dir)       { "public/assets" }
 
         set(:turbosprockets_enabled)    { false }
@@ -43,6 +43,18 @@ module Capistrano
               servers.each do |srvr|
                 run_locally "#{fetch(:rsync_cmd)} ./#{fetch(:assets_dir)}/ #{user}@#{srvr}:#{release_path}/#{fetch(:assets_dir)}/"
               end
+
+              # Sync manifest filenames across servers if our manifest has a random filename
+              if shared_manifest_path =~ /manifest-.+\./
+                run <<-CMD.compact
+                  [ -e #{shared_manifest_path.shellescape} ] || mv -- #{shared_path.shellescape}/#{shared_assets_prefix}/manifest* #{shared_manifest_path.shellescape}
+                CMD
+              end
+
+              # Copy manifest to release root (for clean_expired task)
+              run <<-CMD.compact
+                cp -- #{shared_manifest_path.shellescape} #{current_release.to_s.shellescape}/assets_manifest#{File.extname(shared_manifest_path)}
+              CMD
             end
 
           end
