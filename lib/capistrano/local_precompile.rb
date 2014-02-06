@@ -11,7 +11,7 @@ module Capistrano
         set(:assets_dir)       { "public/assets" }
 
         set(:turbosprockets_enabled)    { false }
-        set(:turbosprockets_backup_dir) { "public/.assets" }
+        set(:turbosprockets_backup_dir) { "public/.assets_#{rails_env}" }
         set(:rsync_cmd)                 { "rsync -av" }
 
         before "deploy:assets:precompile", "deploy:assets:prepare"
